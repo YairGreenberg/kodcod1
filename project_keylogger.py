@@ -11,7 +11,6 @@ def on_key_press(key):                             #A function that receives inp
     key = key.lower()
     currentTime = datetime.now().strftime('%d/%m/%y %H:%M')
 
-
     if currentTime not in dicti:
         dicti[currentTime] = ''
 
@@ -21,17 +20,15 @@ def on_key_press(key):                             #A function that receives inp
 
     if "show" in dicti_for_show["all times"]:
         for k,v in dicti.items():                     #A loop that checks if the sequence of words "show" exists.
-            print()                          #If this sequence exists, then the software will print everything that has been saved so far, and empty the dictionary.
-            print(k)
-            print(v)
-            print()
+            print("****",k,"****")                  #If this sequence exists, then the software will print everything that has been saved so far, and empty the dictionary.
+            print(v,end = "\n")
         dicti = {}
         dicti_for_show = {"all times": ''}
 
 
 
 
-
-
-keyboard.on_press(on_key_press)               #function call.
-keyboard.wait('Ctrl + Shift + .')           #Calling a function that terminates the program.
+#For checking the current file.
+if __name__ == "__main__":
+    keyboard.on_press(on_key_press)               #function call.
+    keyboard.wait('Ctrl + Shift + .')           #Calling a function that terminates the program.
