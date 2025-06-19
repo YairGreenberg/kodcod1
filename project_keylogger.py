@@ -26,8 +26,6 @@ def on_key_press(key):                             #A function that receives inp
         dicti_for_show = {"all times": ''}
 
 
-
-
 #For checking the current file.
 if __name__ == "__main__":
     keyboard.on_press(on_key_press)               #function call.
