@@ -46,16 +46,27 @@ document.getElementById("search_text").addEventListener("click", () => {
     getWordInput();
 });
 
+
 function getAllData() {
     const container = document.getElementById("dataContainer");
     fetch(baseURL + '/')
         .then(res => res.json())
         .then(data => {
+            container.innerHTML = '';
+
             data.forEach(obj => {
-                for (const [key, value] of Object.entries(obj)) {
-                    container.innerHTML += `<div><p>${key}: ${value}</p></div>`;
-                }
+                const card = document.createElement("div");
+                card.className = "data-card p-4 shadow-lg";
+
+                const contentHTML = `
+                            <p class="text-lg"><strong>Date:</strong> ${obj.date}</p>
+                            <p class="text-lg"><strong>Time:</strong> ${obj.time}</p>
+                            <p class="text-lg"><strong>Text:</strong> ${obj.text}</p>
+                        `;
+
+                card.innerHTML = contentHTML;
                 container.innerHTML += `<div class="seperate-div"></div>`
+                container.appendChild(card);
             });
         })
         .catch(err => alert("Error fetching data: " + err));
@@ -85,8 +96,16 @@ function getByRangeOfDates() {
         btn.style.display = (startInput.value && endInput.value) ? "inline-block" : "none";
     }
 
-    flatpickr("#startDate", { dateFormat: "d-m-Y", onChange: updateButtonVisibility });
-    flatpickr("#endDate", { dateFormat: "d-m-Y", onChange: updateButtonVisibility });
+    flatpickr("#startDate", {
+        dateFormat: "d-m-Y",
+        onChange: updateButtonVisibility,
+        maxDate: "today"
+    });
+    flatpickr("#endDate", {
+        dateFormat: "d-m-Y",
+        onChange: updateButtonVisibility,
+        maxDate: "today",
+    });
 
     btn.addEventListener("click", sendDateToServer);
 }
@@ -118,10 +137,18 @@ async function sendDateToServer() {
             container.innerHTML = `<p>No results found for the selected date range.</p>`;
         } else {
             data.forEach(obj => {
-                for (const [key, value] of Object.entries(obj)) {
-                    container.innerHTML += `<div><p>${key}: ${value}</p></div>`;
-                }
+                const card = document.createElement("div");
+                card.className = "data-card p-4 shadow-lg";
+
+                const contentHTML = `
+                            <p class="text-lg"><strong>Date:</strong> ${obj.date}</p>
+                            <p class="text-lg"><strong>Time:</strong> ${obj.time}</p>
+                            <p class="text-lg"><strong>Text:</strong> ${obj.text}</p>
+                        `;
+
+                card.innerHTML = contentHTML;
                 container.innerHTML += `<div class="seperate-div"></div>`
+                container.appendChild(card);
             });
         }
     } catch (err) {
@@ -168,10 +195,18 @@ function getWordInput() {
                 container.innerHTML = `<p>No results found for the word "${word}".</p>`;
             } else {
                 data.forEach(obj => {
-                    for (const [key, value] of Object.entries(obj)) {
-                        container.innerHTML += `<div><p>${key}: ${value}</p></div>`;
-                    }
+                    const card = document.createElement("div");
+                    card.className = "data-card p-4 shadow-lg";
+
+                    const contentHTML = `
+                            <p class="text-lg"><strong>Date:</strong> ${obj.date}</p>
+                            <p class="text-lg"><strong>Time:</strong> ${obj.time}</p>
+                            <p class="text-lg"><strong>Text:</strong> ${obj.text}</p>
+                        `;
+
+                    card.innerHTML = contentHTML;
                     container.innerHTML += `<div class="seperate-div"></div>`
+                    container.appendChild(card);
                 });
             }
         } catch (err) {
