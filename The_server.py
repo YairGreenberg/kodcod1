@@ -9,7 +9,6 @@ CORS(app)
 
 my_file = r"saveData.json"
 
-
 @app.route('/save_data', methods=['POST'])
 def save_data():
     """
