@@ -7,8 +7,7 @@ from datetime import datetime
 app = Flask(__name__)
 CORS(app)
 
-my_file = r"c:\my_python\kodcod1\saveData.json"
-
+my_file = r"saveData.json"
 
 @app.route('/save_data', methods=['POST'])
 def save_data():

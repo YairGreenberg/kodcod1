@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
+    />
+    <link rel="stylesheet" href="./keylogger.css" />
+    <title>Keylogger Dashboard</title>
+  </head>
+  <body>
+    <header>
+      <div class="container">
+        <h1>Keylogger Dashboard</h1>
+        <p>Monitor captured keystrokes and filter by date or keyword.</p>
+      </div>
+    </header>
+
+    <main class="container ct">
+      <div class="computer-selection">
+        <select id="computer-list">
+          <option value="" disabled selected>Select a computer</option>
+          <option value="jon">Jon's Computer</option>
+          <option value="Muchamad">Muchamad's Computer</option>
+          <option value="Nassralla">Nassralla's Computer</option>
+        </select>
+      </div>
+
+      <section class="controls">
+        <button id="all_text" class="btn" disabled>Get All Text</button>
+        <button id="search_dates" class="btn" disabled>Search by Date</button>
+        <button id="search_text" class="btn" disabled>Search by Text</button>
+      </section>
+
+      <section class="filters">
+        <div id="datePicker" class="filter-box"></div>
+        <div id="inputContainer" class="filter-box"></div>
+      </section>
+
+      <section class="results">
+        <div id="dataContainer" class="result-box"></div>
+        <div id="filterByTextResults" class="result-box"></div>
+        <div id="filterByDateResults" class="result-box"></div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="container">
+        <p>Yosef Yitzchak Shoval & Yair Greenberg © 2025</p>
+      </div>
+    </footer>
+
+    <script src="./kelogger.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  </body>
+</html>
