@@ -55,6 +55,7 @@ function getAllData() {
                 for (const [key, value] of Object.entries(obj)) {
                     container.innerHTML += `<div><p>${key}: ${value}</p></div>`;
                 }
+                container.innerHTML += `<div class="seperate-div"></div>`
             });
         })
         .catch(err => alert("Error fetching data: " + err));
@@ -120,6 +121,7 @@ async function sendDateToServer() {
                 for (const [key, value] of Object.entries(obj)) {
                     container.innerHTML += `<div><p>${key}: ${value}</p></div>`;
                 }
+                container.innerHTML += `<div class="seperate-div"></div>`
             });
         }
     } catch (err) {
@@ -143,7 +145,7 @@ function getWordInput() {
 
     const submitBtn = document.createElement("button");
     submitBtn.textContent = "Submit";
-submitBtn.classList.add("btn");
+    submitBtn.classList.add("btn");
     submitBtn.addEventListener("click", async () => {
         showDiv("filterByTextResults");
         const word = input.value.trim();
@@ -169,6 +171,7 @@ submitBtn.classList.add("btn");
                     for (const [key, value] of Object.entries(obj)) {
                         container.innerHTML += `<div><p>${key}: ${value}</p></div>`;
                     }
+                    container.innerHTML += `<div class="seperate-div"></div>`
                 });
             }
         } catch (err) {
