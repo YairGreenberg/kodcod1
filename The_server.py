@@ -1,4 +1,6 @@
 import json, os
+import re
+from typing import Counter
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from Xor_2 import xor_on_key
@@ -118,6 +120,47 @@ def filter_by_string():
     if result:
         return jsonify(result)
     return jsonify({"status": "empty"})
+
+
+@app.route('/top_words', methods=['GET'])
+def get_most_frequent_words():
+    """
+    Returns the most frequent words from the 'text' field.
+    The number of words to return can be specified with a 'limit' query parameter.
+    """
+    limit = request.args.get('limit', default=10, type=int)
+
+    if not os.path.exists(my_file) or os.stat(my_file).st_size == 0:
+        return jsonify({"status": "empty", "message": "No data found."})
+
+    try:
+        with open(my_file, 'r', encoding='utf-8') as file:
+            data = json.load(file)
+    except json.JSONDecodeError:
+        return jsonify({"status": "error", "message": "Failed to decode JSON."})
+
+    all_words = []
+    for item in data:
+        text = item.get("text", "")
+        words = _get_clean_words(text)
+        all_words.extend(words)
+
+    word_counts = Counter(all_words)
+    
+    top_words = word_counts.most_common(limit)
+    
+    result = [{"word": word, "count": count} for word, count in top_words]
+    
+    return jsonify(result)
+
+def _get_clean_words(text):
+    """
+    Helper function to clean a string from punctuation and normalize it.
+    """
+    text = text.lower()
+    text = re.sub(r'[^a-z0-9א-ת\s]', '', text)
+    words = text.split()
+    return [word for word in words if word]
 
 
 if __name__ == '__main__':
