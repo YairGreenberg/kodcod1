@@ -46,6 +46,53 @@ document.getElementById("search_text").addEventListener("click", () => {
     getWordInput();
 });
 
+document.getElementById("most_frequent_words").addEventListener("click", () => {
+    showDiv("inputContainer");
+
+    const inputContainer = document.getElementById("inputContainer");
+    inputContainer.innerHTML = "";
+
+    const limitInput = document.createElement("input");
+    limitInput.type = "number";
+    limitInput.id = "wordLimit";
+    limitInput.placeholder = "Enter number of top words";
+    limitInput.min = "1";
+
+    const submitBtn = document.createElement("button");
+    submitBtn.className = "btn";
+    submitBtn.textContent = "Get Top Words";
+    submitBtn.addEventListener("click", getTopWords);
+
+    const resultsContainer = document.createElement("div");
+    resultsContainer.id = "topWordsContainer";
+
+    inputContainer.appendChild(limitInput);
+    inputContainer.appendChild(submitBtn);
+    inputContainer.appendChild(resultsContainer);
+});
+
+const scrollBtn = document.getElementById("scrollToBottomBtn");
+
+scrollBtn.addEventListener("click", () => {
+    window.scrollTo({
+        top: document.body.scrollHeight,
+        behavior: "smooth"
+    });
+});
+
+// פונקציה לבדיקה אם צריך להציג את הכפתור
+function checkScrollButton() {
+    const pageHeight = document.body.scrollHeight;
+    const windowHeight = window.innerHeight;
+
+    if (pageHeight > windowHeight + 100) { // קצת מרווח ביטחון
+        scrollBtn.style.display = "block";
+    } else {
+        scrollBtn.style.display = "none";
+    }
+}
+
+
 
 function getAllData() {
     const container = document.getElementById("dataContainer");
@@ -68,6 +115,7 @@ function getAllData() {
                 container.innerHTML += `<div class="seperate-div"></div>`
                 container.appendChild(card);
             });
+            checkScrollButton();
         })
         .catch(err => alert("Error fetching data: " + err));
 }
@@ -150,6 +198,8 @@ async function sendDateToServer() {
                 container.innerHTML += `<div class="seperate-div"></div>`
                 container.appendChild(card);
             });
+            checkScrollButton();
+
         }
     } catch (err) {
         alert("Error fetching date data: " + err);
@@ -208,6 +258,8 @@ function getWordInput() {
                     container.innerHTML += `<div class="seperate-div"></div>`
                     container.appendChild(card);
                 });
+                checkScrollButton();
+
             }
         } catch (err) {
             alert("Error fetching text data: " + err);
@@ -246,3 +298,75 @@ computerList.addEventListener("change", () => {
     dataContainer.innerHTML = `<p>Data will be loaded based on the selected computer: <strong>${selectedComputer}</strong>. Please click a button to view.</p>`;
     toggleButtons()
 });
+
+
+function getTopWords() {
+    const limitInput = document.getElementById("wordLimit");
+    const limit = limitInput.value;
+    const container = document.getElementById("topWordsContainer");
+
+    container.innerHTML = `<p class="text-center text-gray-500">Loading top words...</p>`;
+
+    if (limit <= 0) {
+        container.innerHTML = `<p class="text-red-500 text-center">Please enter a number greater than 0.</p>`;
+        return;
+    }
+
+    fetch(baseURL + `/top_words?limit=${limit}`)
+        .then(res => res.json())
+        .then(data => {
+            container.innerHTML = '';
+            if (data.status && data.status === "empty") {
+                container.innerHTML = '<p class="text-center text-gray-500">No data found.</p>';
+            } else if (data.length === 0) {
+                container.innerHTML = '<p class="text-center text-gray-500">No words found.</p>';
+            } else {
+                const list = document.createElement('ul');
+                list.className = 'list-disc list-inside space-y-2';
+                data.forEach(item => {
+                    const listItem = document.createElement('li');
+                    listItem.innerHTML = `<strong>${item.word}</strong>: ${item.count} times`;
+                    list.appendChild(listItem);
+                });
+                container.appendChild(list);
+
+                const canvas = document.createElement('canvas');
+                canvas.id = "topWordsChart";
+                canvas.height = 200;
+                container.appendChild(canvas);
+
+                const ctx = canvas.getContext("2d");
+                new Chart(ctx, {
+                    type: "bar",
+                    data: {
+                        labels: data.map(item => item.word),
+                        datasets: [{
+                            label: "Word Frequency",
+                            data: data.map(item => item.count),
+                            backgroundColor: "rgba(75, 192, 192, 0.6)",
+                            borderColor: "rgba(75, 192, 192, 1)",
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    precision: 0
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+                checkScrollButton();
+
+        })
+        .catch(err => {
+            container.innerHTML = `<p class="text-red-500 text-center">Error fetching top words: ${err.message}</p>`;
+            console.error("Error fetching top words:", err);
+        });
+
+}
