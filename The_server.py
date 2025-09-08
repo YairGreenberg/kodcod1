@@ -55,7 +55,7 @@ def get_full_data():
                 my_dict = json.load(file)
             except json.JSONDecodeError:
                 my_dict = []
-    return jsonify(my_dict)
+    return jsonify(my_dict[::-1])
 
 
 @app.route('/filter/date', methods=['POST'])
@@ -88,9 +88,9 @@ def filter_by_date():
             if from_date <= item_date <= to_date:
                 result.append(item)
         except Exception as e:
-            continue
+            to_send = jsonify({"Error": e})
 
-    return jsonify(result)
+    return jsonify(result[::-1])
 
 
 
@@ -118,7 +118,7 @@ def filter_by_string():
         if word in item["text"]:
             result.append(item)
     if result:
-        return jsonify(result)
+        return jsonify(result[::-1])
     return jsonify({"status": "empty"})
 
 

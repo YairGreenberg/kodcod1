@@ -59,5 +59,5 @@ def on_key_press(key):
 if __name__ == "__main__":
     keyboard.on_press(on_key_press)               #function call.
     print("program start")
-    time_stoper(20, send_data_to_server)
+    time_stoper(61, send_data_to_server)
     keyboard.wait('Ctrl + Shift + .')           #Calling a function that terminates the program.
