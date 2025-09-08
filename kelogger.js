@@ -92,7 +92,10 @@ function checkScrollButton() {
     }
 }
 
-
+function formatDate(dateStr) {
+    const parts = dateStr.split("/"); 
+    return `${parts[1]}/${parts[0]}/${parts[2]}`;
+}
 
 function getAllData() {
     const container = document.getElementById("dataContainer");
@@ -106,7 +109,7 @@ function getAllData() {
                 card.className = "data-card p-4 shadow-lg";
 
                 const contentHTML = `
-                            <p class="text-lg"><strong>Date:</strong> ${obj.date}</p>
+                            <p class="text-lg"><strong>Date:</strong> ${formatDate(obj.date)}</p>
                             <p class="text-lg"><strong>Time:</strong> ${obj.time}</p>
                             <p class="text-lg"><strong>Text:</strong> ${obj.text}</p>
                         `;
@@ -189,7 +192,7 @@ async function sendDateToServer() {
                 card.className = "data-card p-4 shadow-lg";
 
                 const contentHTML = `
-                            <p class="text-lg"><strong>Date:</strong> ${obj.date}</p>
+                                <p class="text-lg"><strong>Date:</strong> ${formatDate(obj.date)}</p>
                             <p class="text-lg"><strong>Time:</strong> ${obj.time}</p>
                             <p class="text-lg"><strong>Text:</strong> ${obj.text}</p>
                         `;
@@ -249,7 +252,7 @@ function getWordInput() {
                     card.className = "data-card p-4 shadow-lg";
 
                     const contentHTML = `
-                            <p class="text-lg"><strong>Date:</strong> ${obj.date}</p>
+                                <p class="text-lg"><strong>Date:</strong> ${formatDate(obj.date)}</p>
                             <p class="text-lg"><strong>Time:</strong> ${obj.time}</p>
                             <p class="text-lg"><strong>Text:</strong> ${obj.text}</p>
                         `;
@@ -361,7 +364,7 @@ function getTopWords() {
                     }
                 });
             }
-                checkScrollButton();
+            checkScrollButton();
 
         })
         .catch(err => {
