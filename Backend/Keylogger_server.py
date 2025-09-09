@@ -90,27 +90,19 @@ def filter_by_date():
     from_date = datetime.strptime(from_date_str, "%Y-%m-%d")
     to_date = datetime.strptime(to_date_str, "%Y-%m-%d")
 
-    agent_file = json_file.with_stem(date["name"])
-
-    if not os.path.exists(agent_file) or os.stat(agent_file).st_size == 0:
-        return jsonify({"status": "empty"})
-
-    with open(agent_file, 'r', encoding='utf-8') as file:
-        try:
-            my_dict = json.load(file)
-        except json.JSONDecodeError:
-            my_dict = []
+    my_dict = open_file(date['name'])
 
     result = []
-    for item in my_dict:
-        try:
-            item_date = datetime.strptime(item["date"], "%m/%d/%y")
-            if from_date <= item_date <= to_date:
-                result.append(item)
-        except Exception as e:
-            return jsonify({"Error": e})
-
-    return jsonify(result[::-1])
+    if my_dict:
+        for item in my_dict:
+            try:
+                item_date = datetime.strptime(item["date"], "%m/%d/%y")
+                if from_date <= item_date <= to_date:
+                    result.append(item)
+            except Exception as e:
+                return jsonify({"Error": e})
+        return jsonify(result[::-1])
+    return jsonify({'status':'empty'})
 
 
 
@@ -125,18 +117,12 @@ def filter_by_string():
     string = request.get_json()
     word = string.get('word')
     result = []
-    agent_file = json_file.with_stem(string.get('name'))
-    if not os.path.exists(agent_file) or os.stat(agent_file).st_size == 0:
-        return jsonify({"status": "empty"})
-    else:
-        with open(agent_file, 'r', encoding='utf-8') as file:
-            try:
-                my_dict = json.load(file)
-            except json.JSONDecodeError:
-                return jsonify({"status": "error"})
-    for item in my_dict:
-        if word in item["text"]:
-            result.append(item)
+
+    my_dict = open_file(string.get('name'))
+    if my_dict:
+        for item in my_dict:
+            if word in item["text"]:
+                result.append(item)
     if result:
         return jsonify(result[::-1])
     return jsonify({"status": "empty"})
@@ -150,30 +136,25 @@ def get_most_frequent_words():
     """
     limit = request.args.get('limit', default=10, type=int)
     name = request.args.get('name', type=str)
-    agent_file = json_file.with_stem(name)
 
-    if not os.path.exists(agent_file) or os.stat(agent_file).st_size == 0:
-        return jsonify({"status": "empty", "message": "No data found."})
-
-    try:
-        with open(agent_file, 'r', encoding='utf-8') as file:
-            data = json.load(file)
-    except json.JSONDecodeError:
-        return jsonify({"status": "error", "message": "Failed to decode JSON."})
+    data = open_file(name)
 
     all_words = []
-    for item in data:
-        text = item.get("text", "")
-        words = _get_clean_words(text)
-        all_words.extend(words)
+    if data:
+        for item in data:
+            text = item.get("text", "")
+            words = _get_clean_words(text)
+            all_words.extend(words)
 
-    word_counts = Counter(all_words)
+        word_counts = Counter(all_words)
 
-    top_words = word_counts.most_common(limit)
+        top_words = word_counts.most_common(limit)
 
-    result = [{"word": word, "count": count} for word, count in top_words]
+        result = [{"word": word, "count": count} for word, count in top_words]
 
-    return jsonify(result)
+        return jsonify(result)
+    return jsonify({"status": "empty"})
+
 
 def _get_clean_words(text):
     """
