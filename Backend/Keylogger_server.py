@@ -5,11 +5,41 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 from Xor_2 import xor_on_key
 from datetime import datetime
+from pathlib import Path
+
+base_path = Path("/home/user/files/data.json")  # נתיב כללי
+
 
 app = Flask(__name__)
 CORS(app)
 
-my_file = r"saveData.json"
+json_file = r"C:\Users\menachem shoval\Desktop\myTestRepo1\kodcod1\DB\data_3.json"
+
+def open_file(agent_name, data=None):
+    current_path = json_file.with_stem(agent_name)
+    current_path.touch(exist_ok=True)
+    
+    if data:
+        with open(current_path, 'w', encoding='utf-8') as file:
+            try:
+                if os.stat(current_path).st_size > 0:
+                    my_dict = json.load(file)
+                    my_dict.extend(data)
+                else:
+                    my_dict = data
+                json.dump(my_dict, file, ensure_ascii=False)
+                return True
+            except:
+                return False
+    else:
+        with open(current_path, 'r', encoding='utf-8') as file:
+            try:
+                my_dict = json.load(file)
+            except:
+                my_dict = None
+        return my_dict
+
+
 
 @app.route('/save_data', methods=['POST'])
 def save_data():
@@ -20,26 +50,13 @@ def save_data():
 
     if not data:
         return jsonify({"status": "empty"})
-
-    for item in data:
+    
+    for item in data[1:]:
         item["text"] = xor_on_key(item["text"], 7)
 
-    if not os.path.exists(my_file) or os.stat(my_file).st_size == 0:
-        my_dict = list(data)
-    else:
-        with open(my_file, 'r', encoding='utf-8') as file:
-            try:
-                my_dict = json.load(file)
-                my_dict.extend(data)
-            except json.JSONDecodeError:
-                my_dict = []
-            except:
-                return jsonify({"status": False})
+    result = open_file(data[0]["mame"], data[1:])
 
-    with open(my_file, 'w', encoding='utf-8') as updated_file:
-        json.dump(my_dict, updated_file, ensure_ascii=False)
-
-    return jsonify({"status": True})
+    return jsonify({"status": result})
 
 
 @app.route('/', methods=['GET'])
@@ -47,15 +64,15 @@ def get_full_data():
     """
     function allows to intelligence person see all the data from the json  file
     """
-    if not os.path.exists(my_file) or os.stat(my_file).st_size == 0:
-            my_dict = []
-    else:
-        with open(my_file, 'r', encoding='utf-8') as file:
-            try:
-                my_dict = json.load(file)
-            except json.JSONDecodeError:
-                my_dict = []
-    return jsonify(my_dict[::-1])
+
+    agent = request.get_json()["name"]
+
+    my_dict = open_file(agent)
+    
+    if my_dict:
+        return jsonify(my_dict[::-1])
+    
+    return jsonify({"status": "empty"})
 
 
 @app.route('/filter/date', methods=['POST'])
@@ -63,8 +80,9 @@ def filter_by_date():
     """
         function to filter the data by months and/or days.
         the function should recive information in the following format:
-        body : { from_year : "2025", from_month : "05", from_day : "18", to_year : "2025", to_month : "08", to_day : "26" }
+        body : { name: "name", from_year : "2025", from_month : "05", from_day : "18", to_year : "2025", to_month : "08", to_day : "26" }
     """
+
     date = request.get_json()
     from_date_str = f"{date['from_year']}-{date['from_month']}-{date['from_day']}"
     to_date_str = f"{date['to_year']}-{date['to_month']}-{date['to_day']}"
@@ -72,10 +90,12 @@ def filter_by_date():
     from_date = datetime.strptime(from_date_str, "%Y-%m-%d")
     to_date = datetime.strptime(to_date_str, "%Y-%m-%d")
 
-    if not os.path.exists(my_file) or os.stat(my_file).st_size == 0:
+    agent_file = json_file.with_stem(date["name"])
+
+    if not os.path.exists(agent_file) or os.stat(agent_file).st_size == 0:
         return jsonify({"status": "empty"})
 
-    with open(my_file, 'r', encoding='utf-8') as file:
+    with open(agent_file, 'r', encoding='utf-8') as file:
         try:
             my_dict = json.load(file)
         except json.JSONDecodeError:
@@ -88,7 +108,7 @@ def filter_by_date():
             if from_date <= item_date <= to_date:
                 result.append(item)
         except Exception as e:
-            to_send = jsonify({"Error": e})
+            return jsonify({"Error": e})
 
     return jsonify(result[::-1])
 
@@ -104,12 +124,12 @@ def filter_by_string():
     """
     string = request.get_json()
     word = string.get('word')
-    # t = request.get_json().get('word') # לבדוק אח"כ אם זה יעבוד ככה
     result = []
-    if not os.path.exists(my_file) or os.stat(my_file).st_size == 0:
+    agent_file = json_file.with_stem(string.get('name'))
+    if not os.path.exists(agent_file) or os.stat(agent_file).st_size == 0:
         return jsonify({"status": "empty"})
     else:
-        with open(my_file, 'r', encoding='utf-8') as file:
+        with open(agent_file, 'r', encoding='utf-8') as file:
             try:
                 my_dict = json.load(file)
             except json.JSONDecodeError:
@@ -129,12 +149,14 @@ def get_most_frequent_words():
     The number of words to return can be specified with a 'limit' query parameter.
     """
     limit = request.args.get('limit', default=10, type=int)
+    name = request.args.get('name', type=str)
+    agent_file = json_file.with_stem(name)
 
-    if not os.path.exists(my_file) or os.stat(my_file).st_size == 0:
+    if not os.path.exists(agent_file) or os.stat(agent_file).st_size == 0:
         return jsonify({"status": "empty", "message": "No data found."})
 
     try:
-        with open(my_file, 'r', encoding='utf-8') as file:
+        with open(agent_file, 'r', encoding='utf-8') as file:
             data = json.load(file)
     except json.JSONDecodeError:
         return jsonify({"status": "error", "message": "Failed to decode JSON."})
@@ -146,11 +168,11 @@ def get_most_frequent_words():
         all_words.extend(words)
 
     word_counts = Counter(all_words)
-    
+
     top_words = word_counts.most_common(limit)
-    
+
     result = [{"word": word, "count": count} for word, count in top_words]
-    
+
     return jsonify(result)
 
 def _get_clean_words(text):
